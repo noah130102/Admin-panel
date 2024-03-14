@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Role</title>
+    <style>
+      .permissions-options {
+        display: none;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const profileResponse = await axios.get("/profile", {
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          });
+          if (profileResponse.data.role == "user") {
+            document.body.style.display = "none";
+          } else {
+            document.body.style.display = "block";
+          }
+        } else {
+          document.body.style.display = "none";
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <%- include('navbar') %> <%- include('sidebar') %>
+    <div class="content-wrapper">
+      <div
+        id="container"
+        class="container card p-3 border align-items-center ml-auto mr-auto w-100 bg-light mt-4 mb-4"
+      >
+        <h1 style="margin-left: 20px; margin-top: 30px">Add Role</h1>
+        <form
+          id="addRoleForm"
+          class="mb-2"
+          style="
+            height: 300px;
+            width: 400px;
+            margin-left: 20px;
+            margin-top: 20px;
+          "
+        >
+          <input
+            type="text"
+            id="role"
+            name="role"
+            placeholder="Role"
+            class="form-control"
+          />
+          <br />
+
+          <div id="rates" class="form-outline mb-4">
+            <select
+              id="ActiveOrNot"
+              class="form-select col-sm-7"
+              aria-label="Default select example"
+            >
+              <option value="1">Active</option>
+              <option value="0">Not Active</option>
+            </select>
+          </div>
+          <div class="permissions-container form-outline mb-4 ml-4">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value=""
+              id="permissions-check"
+            />
+            <label class="form-check-label" for="permissions-check"
+              >Permissions</label
+            >
+            <div class="permissions-options">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="check1"
+                  class="form-check-input"
+                  value=""
+                />
+                <label class="form-check-label" for="flexCheckDefault">
+                  Allow Access to all pages
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="check2"
+                  class="form-check-input"
+                  value=""
+                />
+                <label class="form-check-label" for="flexCheckChecked">
+                  Allow User Access
+                </label>
+              </div>
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  id="check3"
+                  class="form-check-input"
+                  value=""
+                />
+                <label class="form-check-label" for="flexCheckChecked">
+                  Allow Role Access
+                </label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block mb-4">
+            Add Role
+          </button>
+        </form>
+        <a href="/admin" style="margin-left: 20px">Back to Panel</a>
+      </div>
+    </div>
+    <script>
+      const addRoleForm = document.getElementById("addRoleForm");
+      addRoleForm.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const check1 = document.getElementById("check1");
+        const check2 = document.getElementById("check2");
+        const check3 = document.getElementById("check3");
+        let checkedArray = [];
+        if (check1.checked == true) {
+          checkedArray.push("allowAll");
+        }
+        if (check2.checked == true) {
+          checkedArray.push("allowDisplay");
+        }
+        if (check3.checked == true) {
+          checkedArray.push("allowEdit");
+        }
+
+        const role = document.getElementById("role").value;
+        const activity = document.getElementById("ActiveOrNot").value;
+
+        const res = await axios.post("/addRole", {
+          role: role,
+          active: activity,
+          permissions: checkedArray,
+        });
+
+        if (!alert("User Added!!")) {
+          window.location = "/admin";
+        }
+      });
+
+      // Jquery
+      $(document).ready(function () {
+        $("#permissions-check").change(function () {
+          if ($(this).is(":checked")) {
+            $(".permissions-options").show();
+          } else {
+            $(".permissions-options").hide();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

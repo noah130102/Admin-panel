@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add User</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+    />
+
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    />
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Include jQuery Validation plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const rolesResponse = await axios.get("/getRoles");
+        const roles = rolesResponse.data;
+        const roleSelect = document.getElementById("role");
+        roles.forEach((role) => {
+          const option = document.createElement("option");
+          option.value = role.role;
+          option.textContent = role.role;
+          roleSelect.appendChild(option);
+        });
+      });
+      document.addEventListener("DOMContentLoaded", async function () {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const profileResponse = await axios.get("/profile", {
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          });
+
+          if (profileResponse.data.role === "user") {
+            document.body.style.display = "none";
+          } else {
+            document.body.style.display = "block";
+          }
+        } else {
+          document.body.style.display = "none";
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="">
+      <nav><%- include('navbar') %></nav>
+      <aside><%- include('sidebar') %></aside>
+      <div
+        class="card p-3 align-items-center ml-auto mr-auto w-100 bg-light mt-4"
+      >
+        <h1 style="margin-left: 20px; margin-top: 30px">Add User</h1>
+        <form
+          id="quickForm"
+          style="width: 400px; margin-left: 20px; margin-top: 20px"
+        >
+          <div class="form-group form-outline mb-4">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="username"
+              class="form-control"
+            />
+          </div>
+          <div class="form-group form-outline mb-4">
+            <label for="Email" class="form-label">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="email"
+              required
+              class="form-control"
+            />
+          </div>
+          <div class="form-group form-outline mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="password"
+              required
+              class="form-control"
+            />
+          </div>
+
+          <div class="form-group form-outline mb-4">
+            <label for="gender" class="form-label">Gender</label>
+
+            <select
+              class="form-select"
+              id="gender"
+              name="gender"
+              aria-label="Default select example"
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Non-Binary" selected>Non-Binary</option>
+            </select>
+          </div>
+          <div class="form-group form-outline mb-4">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" id="age" name="age" class="form-control" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select
+              id="role"
+              class="form-select col-sm-7"
+              aria-label="Default select example"
+            ></select>
+          </div>
+          <div class="form-group form-outline mb-4">
+            <label for="photo" class="form-label">Photo</label>
+            <input type="file" id="file" name="file" class="form-control" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block mb-4">
+            Submit
+          </button>
+        </form>
+      </div>
+      <p style="margin-left: 20px">
+        Already have an account? <a href=" /login">Login</a>
+      </p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="dist/js/adminlte.js"></script>
+    <script src="plugins/chart.js/Chart.min.js"></script>
+    <script src="dist/js/demo.js"></script>
+    <script src="dist/js/pages/dashboard3.js"></script>
+    <script>
+      $(function () {
+        $.validator.setDefaults({
+          submitHandler: function () {
+            alert("Form successful submitted!");
+          },
+        });
+        $("#quickForm").validate({
+          rules: {
+            username: {
+              required: true,
+              username: true,
+            },
+            password: {
+              required: true,
+              minlength: 3,
+            },
+            email: {
+              required: true,
+              email: true,
+            },
+            age: {
+              required: true,
+              age: true,
+            },
+            file: {
+              required: true,
+              accept: "image/jpeg, image/png",
+              filesize: 2048000,
+            },
+          },
+          messages: {
+            username: {
+              required: "Please enter a username",
+              username: "Please enter a valid username",
+            },
+            password: {
+              required: "Please provide a password",
+              minlength: "Your password must be at least 5 characters long",
+            },
+            email: {
+              required: "Please enter your Email Address",
+              email: "Please enter Valid Email Address",
+            },
+            age: {
+              required: "Please Enter Your Age",
+              age: "Age Must Be Number",
+            },
+            file: {
+              required: "Please select a photo",
+              accept: "Please select a valid image file (jpg, jpeg, png)",
+              filesize: "Photo size should not exceed 2 MB",
+            },
+          },
+          errorElement: "span",
+          errorPlacement: function (error, element) {
+            error.addClass("invalid-feedback");
+            element.closest(".form-group").append(error);
+          },
+          highlight: function (element, errorClass, validClass) {
+            $(element).addClass("is-invalid");
+          },
+          unhighlight: function (element, errorClass, validClass) {
+            $(element).removeClass("is-invalid");
+          },
+        });
+      });
+    </script>
+    <script>
+      const form = document.getElementById("quickForm");
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        let formData = new FormData(form);
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const email = document.getElementById("email").value;
+        const age = document.getElementById("age").value;
+        const role = document.getElementById("role").value;
+        const gender = document.getElementById("gender").value;
+        const file = document.getElementById("file");
+
+        const formdata = new FormData();
+        formdata.append("username", username);
+        formdata.append("email", email);
+        formdata.append("password", password);
+        formdata.append("gender", gender);
+        formdata.append("age", age);
+        formdata.append("role", role);
+        formdata.append("file", file.files[0]);
+
+        try {
+          const res = await axios.post("/addByAdmin", formdata, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          if (res.status == 200) {
+            window.location = "/login";
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>View User Details</title>
+
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+    />
+    <link
+      rel="stylesheet"
+      href="../../plugins/fontawesome-free/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css"
+    />
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+    />
+    <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    />
+    <link rel="stylesheet" href="dist/css/adminlte.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      const permissions = [];
+      let userRole = null;
+      document.addEventListener("DOMContentLoaded", async function () {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const profileResponse = await axios.get("/profile", {
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          });
+
+          userRole = profileResponse.data.role;
+
+          if (profileResponse.data.role === "user") {
+            document.body.style.display = "none";
+          } else {
+            document.body.style.display = "block";
+          }
+        } else {
+          document.body.style.display = "none";
+        }
+
+        const doc = await axios.get(`/permissions/${userRole}`);
+
+        doc.data.permissions.forEach((item) => permissions.push(item));
+      });
+    </script>
+  </head>
+  <body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+      <%- include('navbar') %> <%- include('sidebar') %>
+      <div class="content-wrapper">
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>DataTables</h1>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active">User Management</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h3 class="card-title">Admin can add or delete user</h3>
+                  </div>
+
+                  <div class="card-body">
+                    <input
+                      type="text"
+                      id="myInput"
+                      class="form-control"
+                      onkeyup="myFunction()"
+                      placeholder="Search for names.."
+                    />
+                    <br />
+                    <article class="content">
+                      <table
+                        id="tblContact"
+                        class="table table-bordered table-hover"
+                        cellspacing="0"
+                      >
+                        <thead class="thead-dark">
+                          <tr>
+                            <th>Profile Pic</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Gender</th>
+                            <th>Age</th>
+                            <th>Role</th>
+                            <th>Controls</th>
+                          </tr>
+                        </thead>
+                        <tbody id="userDisplay" class="mt-4"></tbody>
+                        <tfoot></tfoot>
+                      </table>
+                    </article>
+                    <div class="d-flex justify-content-end align-items-center">
+                      <button id="prevButton" class="btn btn-dark mr-2 rounded">
+                        Prev
+                      </button>
+                      <div id="pageNumbers" class="mr-2"></div>
+                      <button id="nextButton" class="btn btn-dark rounded">
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <footer class="main-footer">
+        <div class="float-right d-none d-sm-block"><b>Version</b> 3.2.0</div>
+        <strong
+          >Copyright &copy; 2024-2028 <a href="/admin">Main Page</a>.</strong
+        >
+        All rights reserved.
+      </footer>
+
+      <aside class="control-sidebar control-sidebar-dark"></aside>
+    </div>
+
+    <!-- ./wrapper -->
+    <script>
+      let data, table, sortCol, selId;
+      let sortAsc = false;
+      const pageSize = 6;
+      let curPage = 1;
+      document
+        .querySelector("#nextButton")
+        .addEventListener("click", nextPage, false);
+      document
+        .querySelector("#prevButton")
+        .addEventListener("click", previousPage, false);
+
+      const fetchData = async () => {
+        try {
+          const response = await axios.get("/getUsers");
+
+          return response.data;
+        } catch (error) {
+          console.log(error);
+          return;
+        }
+      };
+
+      const displayData = async () => {
+        const table = document.querySelector("#userDisplay");
+        data = await fetchData();
+        if (!data) {
+          return;
+        }
+        const totalPages = Math.ceil(data.length / pageSize);
+
+        let start = (curPage - 1) * pageSize;
+        let end = curPage * pageSize;
+        let result = "";
+
+        const data2 = [];
+        data.forEach((element) => {
+          data2.unshift(element);
+        });
+        data2
+          .filter((row, index) => index >= start && index < end)
+          .forEach((c, index) => {
+            result += `<tr>
+              <td><img class="rounded mx-auto d-block" src="http://localhost:4000/${c.photo}" alt="temp"> </td>
+         <td>${c.username}</td>
+         <td>${c.email}</td>
+         <td>${c.gender}</td>
+         <td>${c.age}</td>
+         <td>${c.role}</td>
+         <td>
+          <button id="test"  class="btn btn-primary update-btn" data-id="${c._id}">Update</button>
+          <button class="btn btn-danger delete-btn" data-id="${c._id}">Delete</button>
+          </td>
+         </tr>`;
+          });
+
+        table.innerHTML = result;
+
+        const pageNumbersContainer = document.querySelector("#pageNumbers");
+        let pageNumbersHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          pageNumbersHTML += `<button class="pageNumber btn-primary ml-1 mr-1 p-2 rounded" data-page="${i}">${i}</button>`;
+        }
+        pageNumbersContainer.innerHTML = pageNumbersHTML;
+
+        const updateButtons = document.querySelectorAll(".update-btn");
+
+        const pageNumberButtons = document.querySelectorAll(".pageNumber");
+        pageNumberButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            curPage = parseInt(button.dataset.page);
+            displayData();
+          });
+        });
+
+        updateButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const obj = button.getAttribute("data-id");
+            localStorage.setItem("currentUserId", obj);
+            window.location.href = "/updateUser";
+          });
+        });
+
+        const deleteButtons = document.querySelectorAll(".delete-btn");
+        deleteButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const id = button.getAttribute("data-id");
+            deleteUser(id);
+          });
+        });
+      };
+
+      displayData();
+
+      function previousPage() {
+        if (curPage > 1) curPage--;
+        displayData();
+      }
+      const deleteUser = async (id) => {
+        try {
+          if (confirm("Do You Really want to delete User!!")) {
+            const del = await axios.delete(`/deleteUser/${id}`);
+            if (del) {
+              window.location.reload();
+            }
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      const updateUser = (id) => {};
+      function nextPage() {
+        if (curPage * pageSize < data.length) curPage++;
+        displayData();
+      }
+      function myFunction() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("tblContact");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td");
+          if (td) {
+            txtValue = "";
+            for (j = 0; j < td.length; j++) {
+              txtValue += " " + td[j].textContent || td[j].innerText;
+            }
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE -->
+    <script src="dist/js/adminlte.js"></script>
+
+    <!-- OPTIONAL SCRIPTS -->
+    <script src="plugins/chart.js/Chart.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="dist/js/demo.js"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="dist/js/pages/dashboard3.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

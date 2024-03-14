@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidebar</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css"
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"
+    /> -->
+
+    <!-- <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css" /> -->
+
+    <!-- <link
+      rel="stylesheet"
+      href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+    /> -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <!-- <link rel="stylesheet" href="dist/css/adminlte.min.css" /> -->
+  </head>
+  <body>
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <div class="sidebar h-100">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="info">
+            <a href="/admin" class="d-block"> Admin</a>
+          </div>
+        </div>
+        <div class="form-inline">
+          <div class="input-group" data-widget="sidebar-search">
+            <input
+              class="form-control form-control-sidebar"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+          </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul
+            class="nav nav-pills nav-sidebar flex-column"
+            data-widget="treeview"
+            role="menu"
+            data-accordion="false"
+          >
+            <li class="nav-item">
+              <a href="/listUserDetails" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>
+                  User Management
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/addUserByAdmin" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Create Users</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/listUserDetails" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Update Users</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/listUserDetails" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Delete Users</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <ul
+            class="nav nav-pills nav-sidebar flex-column"
+            data-widget="treeview"
+            role="menu"
+            data-accordion="false"
+          >
+            <li class="nav-item">
+              <a href="/listUserDetails" class="nav-link">
+                <i class="nav-icon fas fa-chart-pie"></i>
+                <p>
+                  Roles Management
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="/addRole" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Create Role</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/updateRole" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Update Roles</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="/updateRole" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Delete Roles</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+  </body>
+</html>
